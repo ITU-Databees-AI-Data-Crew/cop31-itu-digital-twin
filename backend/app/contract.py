@@ -51,7 +51,13 @@ class ShowScenario(BaseModel):
     scenario_id: str
 
 
-UI_ACTIONS: list[type[BaseModel]] = [SelectBuilding, OpenSystem, ColorCampus, ShowScenario]
+class SetTime(BaseModel):
+    """Move the app clock to a time, e.g. to show a winter morning or the exam weeks. The whole screen follows."""
+
+    time: datetime = Field(description="Local Istanbul time inside the data year (2025-09-01 to 2026-08-31), e.g. 2026-01-07T10:00.")
+
+
+UI_ACTIONS: list[type[BaseModel]] = [SelectBuilding, OpenSystem, ColorCampus, ShowScenario, SetTime]
 UI_ACTIONS_BY_NAME: dict[str, type[BaseModel]] = {m.__name__: m for m in UI_ACTIONS}
 
 

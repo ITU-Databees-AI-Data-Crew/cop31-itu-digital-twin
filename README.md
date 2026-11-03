@@ -99,15 +99,24 @@ python -m app.generator --plot    # --plot also draws charts into data/generated
 The real inputs (building shapes and sizes, weather, academic calendar) are already in `data/inputs/`.
 To download them again: `python data/fetch_inputs.py` from the repo root.
 
-**Already works: chat with the helper in your terminal** (it uses a few fake buildings for now):
+**Already works: the backend.** Put your keys in `backend/.env` (copy `backend/.env.example`), then:
 
 ```bash
 cd backend
-pip install -e .
-OPENROUTER_API_KEY=your-key python -m app.agent
+uvicorn app.main:app --reload
 ```
 
-Set `COP31_MODEL` to try a different model (it must support tool calling on OpenRouter).
+Open http://localhost:8000/docs to see and try every route (buildings, clock, numbers, what-ifs, chat).
+Without an OpenRouter key everything works except the chat.
+
+**Already works: chat with the helper in your terminal**, no frontend needed:
+
+```bash
+cd backend
+python -m app.agent
+```
+
+The default model is `xiaomi/mimo-v2.6-pro`. Set `COP31_MODEL` to try another one (it must support tool calling on OpenRouter).
 
 ## Contributing
 

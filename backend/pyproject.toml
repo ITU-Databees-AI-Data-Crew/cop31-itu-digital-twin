@@ -14,11 +14,15 @@ dependencies = [
     "langchain-openai",
     "langchain-tavily",
     "ddgs",
+    "python-dotenv",
+    "numpy",
+    "pandas",
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
-# Offline data generator: pip install -e ".[generator]"
-generator = ["numpy", "pandas", "pyyaml", "matplotlib"]
+# Plots for the offline data generator: pip install -e ".[generator]"
+generator = ["matplotlib"]
 
 [tool.setuptools.packages.find]
 include = ["app*"]
