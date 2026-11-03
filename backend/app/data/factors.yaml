@@ -1,0 +1,14 @@
+# Emission factors used to derive emissions at query time. Real, cited values.
+
+electricity_kg_co2e_per_kwh: 0.469
+# Türkiye 2023 electricity consumption-point emission factor, distribution-grid connected
+# (Dağıtım Hattından Bağlı Tüketim Noktası Emisyon Faktörü): 0.469 tCO2e/MWh.
+# Source: T.C. Enerji ve Tabii Kaynaklar Bakanlığı (EVÇED), "Türkiye Elektrik Üretimi ve Elektrik
+# Tüketim Noktası Emisyon Faktörleri Bilgi Formu", ETKB-EVÇED-FRM-042, calculation year 2023,
+# published 26.12.2025.
+# https://enerji.gov.tr/Media/Dizin/EVCED/tr/%C3%87evreVe%C4%B0klim/%C4%B0klimDe%C4%9Fi%C5%9Fikli%C4%9Fi/EmisyonFaktorleri/2023_Turkiye_Elektrik_UretimiveElektrik_Tuketim_Noktasi_Emisyon_Faktorleri.pdf
+
+natural_gas_kg_co2e_per_kwh: 0.2026
+# Natural gas burned in commercial/institutional buildings, IPCC 2006 Guidelines, Vol. 2 Ch. 2,
+# default factors: CO2 56,100 kg/TJ, CH4 5 kg/TJ, N2O 0.1 kg/TJ (net calorific value basis).
+# CO2e with AR5 GWP100 (CH4 = 28, N2O = 265): 56,266.5 kg/TJ ÷ 277,777.8 kWh/TJ = 0.2026 kg/kWh.

@@ -4,6 +4,7 @@ import argparse
 
 import pandas as pd
 
+from app.data import store
 from app.generator import inputs, occupancy, systems
 
 
@@ -20,11 +21,6 @@ def main() -> None:
     occ = occupancy.generate(buildings, weather, days, params)
     m = systems.generate(occ, buildings, weather, params)
 
-    inputs.GENERATED.mkdir(parents=True, exist_ok=True)
-    out = inputs.GENERATED / "measurements.csv"
-    m.to_csv(out, index=False)
-    print(f"{out.relative_to(inputs.REPO)}: {len(m)} rows, {m['metric'].nunique()} metrics × {len(buildings)} buildings")
-
     for bid, g in occ.groupby("building_id"):
         cap = buildings.loc[bid, "gross_floor_area_m2"] / params["m2_per_person"]
         print(f"  {bid}: capacity {cap:.0f} | peak {g['people'].max()} | mean {g['people'].mean():.0f}")
@@ -33,6 +29,10 @@ def main() -> None:
 
     problems = occupancy.check(occ, buildings, params) + systems.check(m, buildings, params)
     print("checks: OK" if not problems else "checks FAILED:\n  " + "\n  ".join(problems))
+
+    capacity = (buildings["gross_floor_area_m2"] / params["m2_per_person"]).round().astype(int)
+    store.build(m, buildings.assign(capacity=capacity), meta={"seed": params["seed"]})
+    print(f"{store.DB_PATH.relative_to(inputs.REPO)}: {len(m)} measurements, {len(buildings)} buildings")
 
     if args.plot:
         from app.generator import plot

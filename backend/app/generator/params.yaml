@@ -47,7 +47,8 @@ water:
 
 waste:
   kg_per_person_hour: 0.02
-  day_sigma: 0.15
+  day_sigma: 0.15            # day-to-day wobble of the total
+  share_sigma: 0.15          # day-to-day wobble of the split between streams (moves the recycling rate)
 
 # Plausibility ranges for yearly totals (kWh per m² gross floor area). Not İTÜ data:
 # just "does this look like a university building at all".

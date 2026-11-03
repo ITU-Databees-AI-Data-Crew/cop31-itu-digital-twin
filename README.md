@@ -87,6 +87,18 @@ More detail:
   Optional: `TAVILY_API_KEY` for better web search (without it, the helper uses DuckDuckGo).
 - **For the demo,** everything runs as one program on one laptop. Nothing is put online.
 
+**Already works: make the data.** This builds a year of synthetic campus data into `data/generated/campus.db`
+(same result every time). Run it once before anything else:
+
+```bash
+cd backend
+pip install -e ".[generator]"
+python -m app.generator --plot    # --plot also draws charts into data/generated/plots/
+```
+
+The real inputs (building shapes and sizes, weather, academic calendar) are already in `data/inputs/`.
+To download them again: `python data/fetch_inputs.py` from the repo root.
+
 **Already works: chat with the helper in your terminal** (it uses a few fake buildings for now):
 
 ```bash
@@ -105,6 +117,7 @@ Want to help? Read [CONTRIBUTING.md](CONTRIBUTING.md) first. It's short.
 
 ```
 backend/    Python: Generator, Simulation engine, Data API, Agent, Backend API
+data/       Real inputs (inputs/) and generated data (generated/, not in git)
 frontend/   The screen (React)
 docs/       How the app works
 ```

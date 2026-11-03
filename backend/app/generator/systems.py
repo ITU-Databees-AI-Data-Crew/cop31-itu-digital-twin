@@ -60,11 +60,19 @@ def water(people: np.ndarray, area: float, w: dict, litres_per_person_hour: floa
     return (people * litres_per_person_hour + area * w["base_l_per_m2_hour"]) / 1000
 
 
-def waste(people: pd.Series, kg_per_person_hour: float, shares: dict, sigma: float, rng: np.random.Generator) -> pd.DataFrame:
-    """Daily kg per stream. `people` is hourly, indexed by time."""
+def waste(people: pd.Series, kg_per_person_hour: float, shares: dict, sigma: float, share_sigma: float,
+          rng: np.random.Generator) -> pd.DataFrame:
+    """Daily kg per stream. `people` is hourly, indexed by time.
+
+    Each day's split wobbles around the building's typical shares, so the recycling rate isn't flat.
+    """
     person_hours = people.resample("D").sum()
-    total = person_hours * kg_per_person_hour * np.exp(rng.normal(0, sigma, len(person_hours)))
-    return pd.DataFrame({f"{s}_kg": total * shares[s] for s in WASTE_STREAMS})
+    n = len(person_hours)
+    total = person_hours.to_numpy() * kg_per_person_hour * np.exp(rng.normal(0, sigma, n))
+    base = np.array([shares[s] for s in WASTE_STREAMS])
+    daily = base * np.exp(rng.normal(0, share_sigma, (n, len(WASTE_STREAMS))))
+    daily /= daily.sum(axis=1, keepdims=True)
+    return pd.DataFrame(total[:, None] * daily, index=person_hours.index, columns=[f"{s}_kg" for s in WASTE_STREAMS])
 
 
 def generate(occ: pd.DataFrame, buildings: pd.DataFrame, weather: pd.DataFrame, params: dict) -> pd.DataFrame:
@@ -94,7 +102,7 @@ def generate(occ: pd.DataFrame, buildings: pd.DataFrame, weather: pd.DataFrame, 
         add(bid, "water", "water_m3", times, np.round(water(people, area, w, lph) * meter(), 3))
 
         kg = bp.get("waste_kg_per_person_hour", ws["kg_per_person_hour"])
-        daily = waste(s, kg, bp["waste_shares"], ws["day_sigma"], rng)
+        daily = waste(s, kg, bp["waste_shares"], ws["day_sigma"], ws["share_sigma"], rng)
         for metric in daily.columns:
             add(bid, "waste", metric, daily.index, daily[metric].round(2).to_numpy())
 
