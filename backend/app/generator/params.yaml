@@ -18,6 +18,43 @@ noise:
   hour_sigma: 0.05    # hour-to-hour wobble
   hour_memory: 0.85   # 0 = jittery, close to 1 = slow drifting
 
+# --- Energy, water, waste (shared by all buildings unless a building overrides) ---
+
+energy:
+  on_threshold: 0.01         # building counts as "on" (HVAC running, heating at setpoint) above this share of capacity
+  lighting_w_m2: 6.0         # installed lighting power (mixed fluorescent)
+  lighting_always_on: 0.10   # corridors, stairs, emergency lights
+  lighting_full_at: 0.30     # share of capacity at which all lights are on
+  plug_base_w_m2: 1.5        # always-on: network, fridges, standby
+  plug_w_per_person: 40      # laptops, chargers, coffee machines
+  fan_w_m2: 2.0              # ventilation fans while on
+  heat_per_person_w: 80      # body heat
+  solar_gain: 0.005          # share of sunlight on the floor area that ends up as indoor heat
+  heat_loss_w_m2k: 2.5       # heat loss per m² floor per °C indoor-outdoor difference: walls, windows + air leaks (older, poorly insulated)
+  ventilation_w_k_per_person: 10   # fresh air (~8 L/s per person) that has to be heated or cooled, while on
+  thermal_hours: 12          # thermal mass: how slowly the building follows outdoor temperature
+  heat_setpoint_c: 20
+  heat_setback_c: 12         # when off (nights, holidays): boiler practically off, just frost/damp protection
+  cool_setpoint_c: 25
+  cooling_cop: 3.0
+  boiler_efficiency: 0.90
+  meter_sigma: 0.03          # small meter wobble
+  meter_memory: 0.7
+
+water:
+  l_per_person_hour: 2.0     # toilets, sinks
+  base_l_per_m2_hour: 0.005  # cleaning, leaks
+
+waste:
+  kg_per_person_hour: 0.02
+  day_sigma: 0.15
+
+# Plausibility ranges for yearly totals (kWh per m² gross floor area). Not İTÜ data:
+# just "does this look like a university building at all".
+checks:
+  elec_kwh_m2: [30, 150]
+  gas_kwh_m2: [30, 250]
+
 buildings:
   # Small faculty: classes on lower floors, offices upper. Office-like day, nearly empty at night.
   bbf:
@@ -28,6 +65,7 @@ buildings:
     bumps:
       - {at: 12.5, width: 0.7, height: 0.15}   # lunch
     rain_boost: 0.0        # extra share of people when it rains
+    waste_shares: {recyclable: 0.40, organic: 0.15, residual: 0.44, hazardous: 0.01}
 
   # MED: campus hub. Cafés + common seating on the ground floor (>50% most of the day,
   # full at lunch), lecture halls and offices above.
@@ -40,6 +78,9 @@ buildings:
       - {at: 12.6, width: 0.8, height: 0.38}   # lunch rush
       - {at: 16.5, width: 1.2, height: 0.08}   # afternoon coffee
     rain_boost: 0.06
+    water_l_per_person_hour: 3.0     # cafés: dishwashing, kitchens
+    waste_kg_per_person_hour: 0.035  # cafés: food, cups, packaging
+    waste_shares: {recyclable: 0.30, organic: 0.35, residual: 0.345, hazardous: 0.005}
 
   # Mustafa İnan Library: open 24/7 (OSM), long flat days, packed during finals.
   lib:
@@ -50,3 +91,4 @@ buildings:
     bumps:
       - {at: 15.0, width: 2.5, height: 0.15}   # afternoon study peak
     rain_boost: 0.04
+    waste_shares: {recyclable: 0.50, organic: 0.10, residual: 0.395, hazardous: 0.005}   # mostly paper
