@@ -1,0 +1,25 @@
+start,end,day_type,note,source
+2025-09-01,2025-09-28,break,before fall term,itu
+2025-09-29,2026-01-02,term,fall term classes,itu
+2026-01-03,2026-01-04,break,weekend before fall finals,itu
+2026-01-05,2026-01-18,exam,fall finals,itu
+2026-01-19,2026-02-08,break,semester break,itu
+2026-02-09,2026-05-22,term,spring term classes,itu
+2026-03-16,2026-03-20,break,spring mid-term break (ara tatil),itu
+2026-05-23,2026-05-31,break,gap before spring finals,itu
+2026-06-01,2026-06-14,exam,spring finals,itu
+2026-06-15,2026-06-28,summer,summer,itu
+2026-06-29,2026-08-15,summer_school,summer school classes + exams,itu
+2026-08-16,2026-08-31,summer,summer,itu
+2025-10-28,2025-10-28,half_holiday,Cumhuriyet Bayramı eve (off from 13:00),tr
+2025-10-29,2025-10-29,holiday,Cumhuriyet Bayramı,tr
+2026-01-01,2026-01-01,holiday,New Year,tr
+2026-03-19,2026-03-19,half_holiday,Ramazan Bayramı eve (off from 13:00),tr
+2026-03-20,2026-03-22,holiday,Ramazan Bayramı,tr
+2026-04-23,2026-04-23,holiday,Ulusal Egemenlik ve Çocuk Bayramı,tr
+2026-05-01,2026-05-01,holiday,Labour Day,tr
+2026-05-19,2026-05-19,holiday,Gençlik ve Spor Bayramı,tr
+2026-05-26,2026-05-26,half_holiday,Kurban Bayramı eve (off from 13:00),tr
+2026-05-27,2026-05-30,holiday,Kurban Bayramı,tr
+2026-07-15,2026-07-15,holiday,Demokrasi ve Milli Birlik Günü,tr
+2026-08-30,2026-08-30,holiday,Zafer Bayramı,tr

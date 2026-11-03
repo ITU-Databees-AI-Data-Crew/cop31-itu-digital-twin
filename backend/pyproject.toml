@@ -16,5 +16,9 @@ dependencies = [
     "ddgs",
 ]
 
+[project.optional-dependencies]
+# Offline data generator: pip install -e ".[generator]"
+generator = ["numpy", "pandas", "pyyaml", "matplotlib"]
+
 [tool.setuptools.packages.find]
 include = ["app*"]

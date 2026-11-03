@@ -17,3 +17,6 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+# Generated data (re-create with: python -m app.generator)
+data/generated/

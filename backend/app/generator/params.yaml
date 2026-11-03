@@ -1,0 +1,52 @@
+# Generator knobs. These are NOT measurements: they are tuning values that make
+# the synthetic data look convincing. Change them, re-run, look at the plots.
+#
+# people(building, hour) = capacity × day_level × hour_shape × noise
+
+seed: 31
+
+# Gross floor area per person when the building is full. Same for every building,
+# so capacity comes only from real size (buildings.csv).
+m2_per_person: 10
+
+# Above this share of capacity, a building fills up ever more slowly (it gets crowded)
+# instead of hitting a hard ceiling.
+crowding_knee: 0.85
+
+noise:
+  day_sigma: 0.08     # day-to-day wobble (log-normal, ~±8%)
+  hour_sigma: 0.05    # hour-to-hour wobble
+  hour_memory: 0.85   # 0 = jittery, close to 1 = slow drifting
+
+buildings:
+  # Small faculty: classes on lower floors, offices upper. Office-like day, nearly empty at night.
+  bbf:
+    day_level: {term: 0.55, exam: 0.40, break: 0.20, summer_school: 0.20, summer: 0.10, holiday: 0.02}
+    weekend: 0.08          # multiplier on Saturday/Sunday
+    night_floor: 0.0       # share of the day level that stays overnight
+    plateau: {start: 8.5, end: 18.0, level: 0.80, ramp: 0.7}   # hours; ramp = how soft the edges are
+    bumps:
+      - {at: 12.5, width: 0.7, height: 0.15}   # lunch
+    rain_boost: 0.0        # extra share of people when it rains
+
+  # MED: campus hub. Cafés + common seating on the ground floor (>50% most of the day,
+  # full at lunch), lecture halls and offices above.
+  meda:
+    day_level: {term: 0.90, exam: 0.65, break: 0.25, summer_school: 0.35, summer: 0.12, holiday: 0.03}
+    weekend: 0.15
+    night_floor: 0.0
+    plateau: {start: 8.5, end: 19.5, level: 0.62, ramp: 0.8}
+    bumps:
+      - {at: 12.6, width: 0.8, height: 0.38}   # lunch rush
+      - {at: 16.5, width: 1.2, height: 0.08}   # afternoon coffee
+    rain_boost: 0.06
+
+  # Mustafa İnan Library: open 24/7 (OSM), long flat days, packed during finals.
+  lib:
+    day_level: {term: 0.50, exam: 0.95, break: 0.30, summer_school: 0.30, summer: 0.15, holiday: 0.10}
+    weekend: 0.60
+    night_floor: 0.08
+    plateau: {start: 9.0, end: 23.0, level: 0.80, ramp: 1.5}
+    bumps:
+      - {at: 15.0, width: 2.5, height: 0.15}   # afternoon study peak
+    rain_boost: 0.04
