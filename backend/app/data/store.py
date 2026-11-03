@@ -34,12 +34,24 @@ CREATE TABLE measurements (
     value       REAL NOT NULL,
     PRIMARY KEY (building_id, metric, time)
 ) WITHOUT ROWID;
+CREATE TABLE weather (
+    time             TEXT PRIMARY KEY,
+    temp_c           REAL,
+    rel_humidity_pct REAL,
+    precip_mm        REAL,
+    cloud_cover_pct  REAL,
+    wind_kmh         REAL,
+    solar_wm2        REAL
+);
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
 """
 
 
-def build(measurements: pd.DataFrame, buildings: pd.DataFrame, meta: dict, path: Path = DB_PATH) -> None:
-    """Write a fresh store. `buildings` is indexed by id and has a capacity column."""
+WEATHER_COLUMNS = ["temp_c", "rel_humidity_pct", "precip_mm", "cloud_cover_pct", "wind_kmh", "solar_wm2"]
+
+
+def build(measurements: pd.DataFrame, buildings: pd.DataFrame, weather: pd.DataFrame, meta: dict, path: Path = DB_PATH) -> None:
+    """Write a fresh store. `buildings` is indexed by id and has a capacity column; `weather` is indexed by time."""
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".db.tmp")
     tmp.unlink(missing_ok=True)
@@ -55,6 +67,9 @@ def build(measurements: pd.DataFrame, buildings: pd.DataFrame, meta: dict, path:
             "INSERT INTO measurements VALUES (?,?,?,?,?)",
             m[["building_id", "system", "metric", "time", "value"]].itertuples(index=False),
         )
+        w = weather[WEATHER_COLUMNS].reset_index()
+        w["time"] = pd.to_datetime(w.iloc[:, 0]).dt.strftime(TIME_FORMAT)
+        con.executemany("INSERT INTO weather VALUES (?,?,?,?,?,?,?)", w[["time", *WEATHER_COLUMNS]].itertuples(index=False))
         con.executemany("INSERT INTO meta VALUES (?,?)", [(k, str(v)) for k, v in meta.items()])
         con.commit()
     finally:

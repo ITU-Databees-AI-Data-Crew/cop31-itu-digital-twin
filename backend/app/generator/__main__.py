@@ -31,7 +31,7 @@ def main() -> None:
     print("checks: OK" if not problems else "checks FAILED:\n  " + "\n  ".join(problems))
 
     capacity = (buildings["gross_floor_area_m2"] / params["m2_per_person"]).round().astype(int)
-    store.build(m, buildings.assign(capacity=capacity), meta={"seed": params["seed"]})
+    store.build(m, buildings.assign(capacity=capacity), weather, meta={"seed": params["seed"]})
     print(f"{store.DB_PATH.relative_to(inputs.REPO)}: {len(m)} measurements, {len(buildings)} buildings")
 
     if args.plot:

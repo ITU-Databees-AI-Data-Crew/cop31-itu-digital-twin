@@ -80,10 +80,11 @@ Delete the note and you're back to the real numbers. Nothing breaks.
 and when you ask a question it finds the answer. You never touch the shelf yourself.
 
 **It has two halves:**
-- **The store:** a single SQLite database file. Three tables:
+- **The store:** a single SQLite database file (`data/generated/campus.db`, rebuilt by the Generator). Tables:
   - `buildings`: one row per building (id, name, type, area, people, …)
   - `measurements`: one row per number: *which building · which system · which metric · which hour · value*
-  - `scenarios`: the what-if notes from the Simulation engine
+  - `weather`: the real hourly weather (for solar what-ifs and "why" questions)
+  - The what-if notes live in a **separate** file, `data/state/scenarios.db`, so re-running the Generator never wipes them.
 - **The questions** (Python functions in `campus.py`), for example:
   - "list all buildings"
   - "give me building X's gas use between these two dates"

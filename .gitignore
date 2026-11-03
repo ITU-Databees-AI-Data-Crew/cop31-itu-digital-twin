@@ -20,3 +20,6 @@ dist/
 
 # Generated data (re-create with: python -m app.generator)
 data/generated/
+
+# Runtime state (what-if scenarios)
+data/state/
