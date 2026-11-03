@@ -1,22 +1,22 @@
 """Chat with the agent in the terminal, no frontend needed.
 
     cd backend
-    OPENROUTER_API_KEY=... python -m app.agent
+    python -m app.agent          (OPENROUTER_API_KEY from the environment or backend/.env)
 
-UI actions are printed and applied to a pretend screen state,
+The answer streams in as it's written. UI actions are printed and applied to a pretend screen state (and SetTime to the real app clock),
 so follow-up questions like "and its water?" work.
 """
 
-from datetime import datetime
-
 from app.contract import UiState
+from app.sim.clock import CLOCK
 
 from . import Agent
 
 
 def main() -> None:
     agent = Agent()
-    screen = UiState(sim_time=datetime(2026, 11, 14, 10, 0))
+    screen = UiState(sim_time=CLOCK.now().to_pydatetime())
+    print(f"App time: {screen.sim_time:%Y-%m-%d %H:%M}. Ctrl-D to quit.\n")
 
     while True:
         try:
@@ -27,17 +27,27 @@ def main() -> None:
         if not message:
             continue
 
-        out = agent.run("cli", message, screen)
-
-        for action in out.ui_actions:
-            print(f"  [screen] {action.type} {action.args}")
-            if action.type == "SelectBuilding":
-                screen.selected_building = action.args["building_id"]
-            elif action.type == "OpenSystem":
-                screen.system = action.args["system"]
-            elif action.type == "ShowScenario":
-                screen.scenario_id = action.args["scenario_id"]
-        print(f"agent> {out.reply}\n")
+        screen.sim_time = CLOCK.now().to_pydatetime()
+        print("agent> ", end="", flush=True)
+        for event in agent.stream("cli", message, screen):
+            if event["type"] == "text":
+                print(event["delta"], end="", flush=True)
+            elif event["type"] == "tool":
+                print(f"\n  [checking] {event['name']} {event['args']}", flush=True)
+            elif event["type"] == "error":
+                print(f"\n  [error] {event['detail']}")
+            elif event["type"] == "ui_action":
+                action = event["action"]
+                print(f"\n  [screen] {action['type']} {action['args']}", flush=True)
+                if action["type"] == "SelectBuilding":
+                    screen.selected_building = action["args"]["building_id"]
+                elif action["type"] == "OpenSystem":
+                    screen.system = action["args"]["system"]
+                elif action["type"] == "ShowScenario":
+                    screen.scenario_id = action["args"]["scenario_id"]
+                elif action["type"] == "SetTime":
+                    CLOCK.set_time(action["args"]["time"])
+        print("\n")
 
 
 if __name__ == "__main__":

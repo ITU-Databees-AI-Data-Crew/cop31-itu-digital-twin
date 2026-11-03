@@ -7,13 +7,14 @@ Numbers come from the Simulation engine (current campus = baseline + applied wha
 pass scenario_id to preview a draft). Bad input -> 400 with a message saying what's valid.
 """
 
+import json
 import os
 from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
 
@@ -222,6 +223,20 @@ def chat(req: ChatRequest) -> AgentReply:
     agent = get_agent()
     req.ui_state.sim_time = CLOCK.now().to_pydatetime()
     return agent.run(req.session_id, req.message, req.ui_state)
+
+
+@api.post("/chat/stream")
+def chat_stream(req: ChatRequest) -> StreamingResponse:
+    """One chat turn, streamed: one JSON event per line (NDJSON) as it happens.
+
+    Events: text {delta} | tool {name, args} | ui_action {action} | done {reply, ui_actions} | error {detail}.
+    Read it with fetch() + response.body.getReader(), splitting on newlines.
+    """
+    agent = get_agent()
+    req.ui_state.sim_time = CLOCK.now().to_pydatetime()
+    events = agent.stream(req.session_id, req.message, req.ui_state)
+    lines = (json.dumps(e, ensure_ascii=False, default=str) + "\n" for e in events)
+    return StreamingResponse(lines, media_type="application/x-ndjson", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 @api.post("/chat/{session_id}/reset", status_code=204)
