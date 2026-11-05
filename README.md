@@ -99,7 +99,16 @@ python -m app.generator --plot    # --plot also draws charts into data/generated
 The real inputs (building shapes and sizes, weather, academic calendar) are already in `data/inputs/`.
 To download them again: `python data/fetch_inputs.py` from the repo root.
 
-**Already works: the backend.** Put your keys in `backend/.env` (copy `backend/.env.example`), then:
+**The demo: the whole app as one program.** After making the data (above):
+
+```bash
+cd frontend && npm install && npm run build && cd ..   # once, and after frontend changes
+cd backend && uvicorn app.main:app                     # then open http://localhost:8000
+```
+
+To work on the screen with live reload instead: run the backend as below, and `npm run dev` in `frontend/` (http://localhost:5173).
+
+**The backend on its own.** Put your keys in `backend/.env` (copy `backend/.env.example`), then:
 
 ```bash
 cd backend
