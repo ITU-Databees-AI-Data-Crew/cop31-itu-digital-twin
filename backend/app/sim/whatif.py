@@ -31,7 +31,11 @@ def max_pv_kwp(building: dict) -> float:
 def validate(interventions: list) -> None:
     """Check every intervention against the campus. Raises DataError explaining what's wrong."""
     buildings = {b["id"]: b for b in campus.list_buildings()}
+    r = campus.time_range()
+    first, last = r["start"][:10], r["end"][:10]
     for iv in interventions:
+        if iv.start and not first <= iv.start.isoformat() <= last:
+            raise DataError(f"Start {iv.start} is outside the data year ({first} to {last}), so it would never take effect.")
         if iv.building_id not in buildings:
             raise DataError(f"No building with id {iv.building_id!r}. Valid ids: {', '.join(buildings)}")
         if isinstance(iv, Scale) and iv.metric not in SCALABLE:

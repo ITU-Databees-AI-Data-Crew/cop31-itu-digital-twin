@@ -17,15 +17,16 @@ export default function Chart({ buildingId, hour }) {
   const options = CHART_METRICS[state.system];
   const [picked, setPicked] = useState({});
   const metric = options.includes(picked[state.system]) ? picked[state.system] : options[0];
-  const [range, setRange] = useState("week");
   const unit = meta.metrics[metric]?.unit;
-  const daily = meta.metrics[metric]?.resolution === "day";
+  const daily = meta.metrics[metric]?.resolution === "day"; // waste: one value per day, so no "Today" view
+  const [picked_range, setRange] = useState("week");
+  const range = daily && picked_range === "day" ? "week" : picked_range;
 
   const [start, end, resolution] = useMemo(() => {
     const r = RANGES[range];
     if (range === "year" || !hour) return [state.clock.range.start, fmt(addHours(parse(state.clock.range.end), 1)), "month"];
     const [s, e] = r.make(parse(hour));
-    return [fmt(range === "day" && daily ? addHours(s, -24 * 6) : s), fmt(e), daily ? "day" : r.resolution];
+    return [fmt(s), fmt(e), daily ? "day" : r.resolution];
     // the day only changes when the date changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [range, hour?.slice(0, 10), daily]);
@@ -46,7 +47,7 @@ export default function Chart({ buildingId, hour }) {
           {options.map((m) => <option key={m} value={m}>{LABEL[m]}</option>)}
         </select>
         <div className="seg">
-          {Object.entries(RANGES).map(([k, r]) => (
+          {Object.entries(RANGES).filter(([k]) => !(daily && k === "day")).map(([k, r]) => (
             <button key={k} className={k === range ? "on" : ""} onClick={() => setRange(k)}>{r.label}</button>
           ))}
         </div>

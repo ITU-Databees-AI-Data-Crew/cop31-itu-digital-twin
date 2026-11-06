@@ -24,7 +24,7 @@ export default function ClockBar() {
     <div className="clock">
       <span className="clock-time" title="App time (simulated)">🕒 {prettyTime(now)}</span>
       <button onClick={() => run({ action: clock.playing ? "pause" : "play" })}>{clock.playing ? "⏸ Pause" : "▶ Play"}</button>
-      <select value={clock.speed_hours_per_second} onChange={(e) => run({ action: "play", speed: Number(e.target.value) })}>
+      <select value={clock.speed_hours_per_second} onChange={(e) => run({ action: "speed", speed: Number(e.target.value) })}>
         {SPEEDS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
       </select>
       <input

@@ -25,6 +25,7 @@ from pydantic import ValidationError
 from app.contract import UI_ACTIONS_BY_NAME, UiAction
 
 from .tools import EXECUTABLE_BY_NAME
+from .tools.ui import check as check_ui
 
 MAX_MODEL_CALLS = 6
 
@@ -96,6 +97,9 @@ class Turn:
                 parsed = UI_ACTIONS_BY_NAME[name](**args)
             except ValidationError as e:
                 return f"Invalid arguments for {name}: {e}", False
+            problem = check_ui(parsed)
+            if problem:
+                return problem, False  # not sent to the screen; the model gets another turn to fix it
             action = UiAction(type=name, args=parsed.model_dump(mode="json"))
             self.actions.append(action)
             yield {"type": "ui_action", "action": action.model_dump(mode="json")}

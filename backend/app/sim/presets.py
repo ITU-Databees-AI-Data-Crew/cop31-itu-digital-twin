@@ -92,6 +92,10 @@ def create_from_preset(preset: str, building_id: str, amount: float | None = Non
         amount = whatif.max_pv_kwp(building) if preset == "rooftop_solar" else p["amount"]
     if preset != "rooftop_solar" and not 0 < amount <= 100:
         raise DataError(f"amount for {preset} is a percentage between 0 and 100.")
-    ivs = p["make"](building_id, float(amount), date.fromisoformat(str(start)[:10]) if start else None)
+    try:
+        first_day = date.fromisoformat(str(start)[:10]) if start else None
+    except ValueError as e:
+        raise DataError(f"Can't read start {start!r} as a date. Use YYYY-MM-DD.") from e
+    ivs = p["make"](building_id, float(amount), first_day)
     label = name or f"{p['name']}: {building['name']}"
     return scenarios.create_draft(label, ivs, source=source, preset=preset, note=f"{amount:g} {p['amount_unit']}")

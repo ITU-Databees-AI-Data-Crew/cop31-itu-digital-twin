@@ -49,6 +49,17 @@ export function AppProvider({ children }) {
       .catch((e) => setMeta((m) => ({ ...m, error: e.message })));
   }, []);
 
+  // Re-sync with the server clock: someone else (another tab, a restart) may have changed it.
+  useEffect(() => {
+    const sync = () => api.clock().then((clock) => dispatch({ type: "clock", clock }), () => {});
+    const t = setInterval(sync, 5000);
+    window.addEventListener("focus", sync);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener("focus", sync);
+    };
+  }, []);
+
   return <Ctx.Provider value={{ state, dispatch, meta }}>{children}</Ctx.Provider>;
 }
 

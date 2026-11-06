@@ -85,6 +85,15 @@ class Clock:
             self._playing = True
         return self.state()
 
+    def set_speed(self, speed: float) -> dict:
+        """Change the speed without starting or stopping the clock."""
+        if not 0 < speed <= MAX_SPEED:
+            raise DataError(f"Speed must be between 0 and {MAX_SPEED} sim hours per second.")
+        with self._lock:
+            self._reanchor()
+            self._speed = float(speed)
+        return self.state()
+
     def pause(self) -> dict:
         with self._lock:
             self._reanchor()

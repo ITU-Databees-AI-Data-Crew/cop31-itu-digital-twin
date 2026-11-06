@@ -92,7 +92,7 @@ def weather(start: str, end: str, resolution: Literal["hour", "day", "month"] = 
 
 
 class ClockRequest(BaseModel):
-    action: Literal["play", "pause", "set"]
+    action: Literal["play", "pause", "set", "speed"]
     time: str | None = None  # for set
     speed: float | None = None  # sim hours per real second, for play
 
@@ -108,6 +108,10 @@ def clock_control(req: ClockRequest) -> dict:
         if not req.time:
             raise DataError("action 'set' needs a time, e.g. 2026-01-07T10:00.")
         return CLOCK.set_time(req.time)
+    if req.action == "speed":
+        if req.speed is None:
+            raise DataError("action 'speed' needs a speed (sim hours per second).")
+        return CLOCK.set_speed(req.speed)
     if req.action == "play":
         return CLOCK.play(req.speed)
     return CLOCK.pause()

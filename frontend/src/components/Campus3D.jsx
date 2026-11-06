@@ -345,7 +345,8 @@ export default function Campus3D() {
           camera={{ position: OVERVIEW.map((k) => k * scene.span), fov: 38, near: 2, far: 12000 }}
           gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
           dpr={[1, 1.75]}
-          onPointerMissed={() => state.selected && dispatch({ type: "select", id: null })}
+          // a click on empty map deselects; clicks on the labels (HTML over the canvas) must not count
+          onPointerMissed={(e) => e.target?.tagName === "CANVAS" && state.selected && dispatch({ type: "select", id: null })}
         >
           <Scene scene={scene} byBuilding={byBuilding} />
         </Canvas>
