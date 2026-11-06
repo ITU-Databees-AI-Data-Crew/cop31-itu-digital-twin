@@ -1,0 +1,11 @@
+# Build context for backend/Dockerfile is the repo root: send only what it needs.
+**/.git
+**/node_modules
+**/__pycache__
+**/*.egg-info
+frontend/dist
+data/generated
+data/state
+**/.env
+**/.env.*
+**/.DS_Store

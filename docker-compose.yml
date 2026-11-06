@@ -1,0 +1,26 @@
+# The whole app in Docker:  docker compose up --build   ->  http://localhost:8080
+# Keys (OPENROUTER_API_KEY, ...) come from backend/.env. Without them everything works except the chat.
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - path: backend/.env
+        required: false
+    volumes:
+      - scenarios:/srv/data/state # what-ifs survive restarts and rebuilds
+    restart: unless-stopped
+
+  frontend:
+    build: frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  scenarios:

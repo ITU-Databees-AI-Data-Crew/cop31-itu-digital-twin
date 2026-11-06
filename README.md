@@ -99,7 +99,17 @@ python -m app.generator --plot    # --plot also draws charts into data/generated
 The real inputs (building shapes and sizes, weather, academic calendar) are already in `data/inputs/`.
 To download them again: `python data/fetch_inputs.py` from the repo root.
 
-**The demo: the whole app as one program.** After making the data (above):
+**Easiest: Docker.** Needs only Docker (with Compose). Put your keys in `backend/.env` first (copy `backend/.env.example`);
+without them everything works except the chat.
+
+```bash
+docker compose up --build      # then open http://localhost:8080
+```
+
+The data is generated while the image builds, so there's nothing else to run. What-ifs are kept in a Docker volume,
+so they survive restarts. `docker compose down -v` also deletes them.
+
+**Without Docker: the whole app as one program.** After making the data (above):
 
 ```bash
 cd frontend && npm install && npm run build && cd ..   # once, and after frontend changes
